@@ -5,7 +5,7 @@ For this project we're going to build a CRUD app using React. In this project, w
 ## Week 16
 This week you’ll add a form (or forms, if you’d like) to your app. A create form and/or an update form.
 
-##Task 1: Make a form
+## Task 1: Make a form
 At this point, users should be able to create new items, but those items always have the same data. And they should be able to update items, but only in a very simple way.
 
 Now we want to build a form for the app that allows the user to either create or update items with specific data.
