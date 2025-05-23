@@ -1,82 +1,63 @@
-import React, { useState } from 'react';
-import type { FormEvent } from 'react';
-import type { Recipe } from '../App';
+import { useState, useEffect } from 'react';
+import type { Recipe } from '../types/Recipe';
 
-type RecipeFormProps = {
-  addRecipe: (newRecipe: Recipe) => void;
+type Props = {
+  onSubmit: (recipe: Recipe) => void;
+  initialData?: Recipe;
 };
 
-const RecipeForm: React.FC<RecipeFormProps> = ({ addRecipe }) => {
-  // Set local state for form inputs
+const RecipeForm = ({ onSubmit, initialData }: Props) => {
   const [name, setName] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [instructions, setInstructions] = useState('');
 
-  // Handle form submission
-  const handleSubmit = (e: FormEvent) => {
+  // If editing, populate form with existing data
+  useEffect(() => {
+    if (initialData) {
+      setName(initialData.name);
+      setIngredients(initialData.ingredients.join(', '));
+      setInstructions(initialData.instructions);
+    }
+  }, [initialData]);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Build new recipe object
-    const newRecipe: Recipe = {
-      id: Date.now(), // Temporary unique ID
+    const recipe: Recipe = {
+      id: initialData?.id || Date.now(), // Use existing ID or generate a new one
       name,
-      ingredients: ingredients.split(',').map((ing) => ing.trim()),
+      ingredients: ingredients.split(',').map(i => i.trim()),
       instructions,
-      favorite: false,
+      favorite: initialData?.favorite || false,
     };
 
-    // Send the new recipe up to App component
-    addRecipe(newRecipe);
+    onSubmit(recipe);
 
-    // Reset form
-    setName('');
-    setIngredients('');
-    setInstructions('');
+    // Clear form if creating a new recipe
+    if (!initialData) {
+      setName('');
+      setIngredients('');
+      setInstructions('');
+    }
   };
 
   return (
-    <div className="container my-4">
-      <h2>Add a New Recipe</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">Recipe Name</label>
-          <input
-            type="text"
-            className="form-control"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="ingredients" className="form-label">Ingredients (comma separated)</label>
-          <input
-            type="text"
-            className="form-control"
-            id="ingredients"
-            value={ingredients}
-            onChange={(e) => setIngredients(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="instructions" className="form-label">Instructions</label>
-          <textarea
-            className="form-control"
-            id="instructions"
-            rows={3}
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            required
-          ></textarea>
-        </div>
-
-        <button type="submit" className="btn btn-primary">Add Recipe</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="container mt-4">
+      <h3>{initialData ? 'Edit Recipe' : 'Add a New Recipe'}</h3>
+      <div className="mb-3">
+        <label className="form-label">Name</label>
+        <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} required />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Ingredients (comma-separated)</label>
+        <input type="text" className="form-control" value={ingredients} onChange={e => setIngredients(e.target.value)} required />
+      </div>
+      <div className="mb-3">
+        <label className="form-label">Instructions</label>
+        <textarea className="form-control" value={instructions} onChange={e => setInstructions(e.target.value)} required />
+      </div>
+      <button type="submit" className="btn btn-primary">{initialData ? 'Update Recipe' : 'Add Recipe'}</button>
+    </form>
   );
 };
 

@@ -1,5 +1,6 @@
-// Bootstrap header image with overlayed text
-function Header() {
+// This header appears at the top of the app. It uses Bootstrap styling.
+
+const Header = () => {
   return (
     <header
       className="text-center py-5"
@@ -21,6 +22,6 @@ function Header() {
       </div>
     </header>
   );
-}
+};
 
 export default Header;

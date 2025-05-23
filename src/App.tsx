@@ -3,49 +3,49 @@ import Header from './components/Header';
 import RecipeList from './components/RecipeList';
 import RecipeForm from './components/RecipeForm';
 import { testData } from './data/testData';
+import type { Recipe } from './types/Recipe';
 
-// Define a Recipe type (shared across components)
-export type Recipe = {
-  id: number;
-  name: string;
-  ingredients: string[];
-  instructions: string;
-  favorite?: boolean;
-};
-
-function App() {
-  // Main state for recipe data
+const App = () => {
   const [recipes, setRecipes] = useState<Recipe[]>(testData);
+  const [editingRecipe, setEditingRecipe] = useState<Recipe | undefined>(undefined);
 
-  // Add new recipe to the list
-  const addRecipe = (newRecipe: Recipe) => {
-    setRecipes([...recipes, newRecipe]);
-  };
-
-  // Delete a recipe
-  const deleteRecipe = (id: number) => {
-    setRecipes(recipes.filter((recipe) => recipe.id !== id));
-  };
-
-  // Toggle favorite status
-  const toggleFavorite = (id: number) => {
-    const updated = recipes.map((recipe) =>
-      recipe.id === id ? { ...recipe, favorite: !recipe.favorite } : recipe
+  const addOrUpdateRecipe = (newRecipe: Recipe) => {
+    setRecipes(prev =>
+      prev.some(r => r.id === newRecipe.id)
+        ? prev.map(r => (r.id === newRecipe.id ? newRecipe : r))
+        : [...prev, newRecipe]
     );
-    setRecipes(updated);
+    setEditingRecipe(undefined); // Clear edit mode after submit
+  };
+
+  const deleteRecipe = (id: number) => {
+    setRecipes(prev => prev.filter(recipe => recipe.id !== id));
+  };
+
+  const toggleFavorite = (id: number) => {
+    setRecipes(prev =>
+      prev.map(recipe =>
+        recipe.id === id ? { ...recipe, favorite: !recipe.favorite } : recipe
+      )
+    );
+  };
+
+  const editRecipe = (recipe: Recipe) => {
+    setEditingRecipe(recipe);
   };
 
   return (
-    <>
+    <div>
       <Header />
-      <RecipeForm addRecipe={addRecipe} />
+      <RecipeForm onSubmit={addOrUpdateRecipe} initialData={editingRecipe} />
       <RecipeList
         recipes={recipes}
         onDelete={deleteRecipe}
         onToggleFavorite={toggleFavorite}
+        onEdit={editRecipe}
       />
-    </>
+    </div>
   );
-}
+};
 
 export default App;

@@ -1,48 +1,28 @@
-import type { Recipe } from '../App';
+import type { Recipe } from '../types/Recipe';
 
 type Props = {
   recipe: Recipe;
   onDelete: (id: number) => void;
   onToggleFavorite: (id: number) => void;
+  onEdit: (recipe: Recipe) => void;
 };
 
-// This component displays the information for a single recipe
-function RecipeCard({ recipe, onDelete, onToggleFavorite }: Props) {
+const RecipeCard = ({ recipe, onDelete, onToggleFavorite, onEdit }: Props) => {
   return (
-    <div className="card shadow-sm">
+    <div className="card mb-3">
       <div className="card-body">
-        <h5 className="card-title">
-          {recipe.name}{' '}
-          {recipe.favorite && <span className="text-warning">(Favorite)</span>}
-        </h5>
-
-        <h6>Ingredients:</h6>
-        <ul>
-          {recipe.ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-
+        <h4 className="card-title">{recipe.name}</h4>
+        <p><strong>Ingredients:</strong> {recipe.ingredients.join(', ')}</p>
+        <p><strong>Instructions:</strong> {recipe.instructions}</p>
         <p>
-          <strong>Instructions:</strong> {recipe.instructions}
+          <strong>Favorite:</strong> {recipe.favorite ? 'Yes' : 'No'}
         </p>
-
-        {/* Buttons to toggle favorite and delete recipe */}
-        <button
-          className="btn btn-outline-warning me-2"
-          onClick={() => onToggleFavorite(recipe.id)}
-        >
-          {recipe.favorite ? 'Unfavorite' : 'Favorite'}
-        </button>
-        <button
-          className="btn btn-outline-danger"
-          onClick={() => onDelete(recipe.id)}
-        >
-          Delete
-        </button>
+        <button className="btn btn-danger me-2" onClick={() => onDelete(recipe.id)}>Delete</button>
+        <button className="btn btn-warning me-2" onClick={() => onToggleFavorite(recipe.id)}>Toggle Favorite</button>
+        <button className="btn btn-info" onClick={() => onEdit(recipe)}>Edit</button>
       </div>
     </div>
   );
-}
+};
 
 export default RecipeCard;
